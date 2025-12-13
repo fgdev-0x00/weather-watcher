@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* ===============================
+   DESIGN TOKENS (MOCKUP WEATHER)
+   =============================== */
+@theme {
+  /* Backgrounds */
+  --color-bg-main: #f9fafb;
+  --color-bg-card: #ffffff;
+  --color-bg-muted: #f3f4f6;
+
+  /* Text */
+  --color-text-main: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-text-light: #9ca3af;
+
+  /* Accent (purple / indigo) */
+  --color-accent: #4f46e5;
+  --color-accent-hover: #4338ca;
+
+  /* Borders */
+  --color-border-soft: #e5e7eb;
+
+  /* Shadows */
+  --shadow-card: 0 8px 20px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 12px 30px rgba(0,0,0,0.10);
+  --shadow-inset-soft: inset 0 2px 4px rgba(0,0,0,0.06);
+
+  /* Radius */
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+}
+
+/* ===============================
+   BASE
+   =============================== */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    background: var(--color-bg-main);
+    color: var(--color-text-main);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--color-text-main);
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.25s ease-out;
+}
+
+/* ===============================
+   COMPONENTS (utility-like)
+   =============================== */
+@layer components {
+  .card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover {
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .input-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-muted);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-inset-soft);
+    color: var(--color-text-muted);
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: white;
+    font-weight: 700;
+    padding: 1rem;
+    border-radius: var(--radius-xl);
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+  }
+}

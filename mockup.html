@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima Minimalista - Mockup Responsive</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de Lucide Icons para iconos de línea simples -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Tipografía Sans-serif simple */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* Fondo principal muy claro */
+            color: #1f2937; /* Texto principal oscuro */
+        }
+        
+        /* --- ESTILOS MOBILE-FIRST (Predeterminado: max-width: 420px) --- */
+        #app {
+            max-width: 420px; 
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: #ffffff; /* Contenido sobre blanco puro */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- ESTILOS DESKTOP (Aplicados a partir de 768px) --- */
+        @media (min-width: 768px) {
+            body {
+                /* Asegura que el cuerpo use el fondo gris claro para el efecto de tarjeta */
+                background-color: #f9fafb;
+            }
+            #app {
+                /* Ancho de 900px para aprovechar más el espacio horizontal */
+                max-width: 900px; 
+                min-height: 80vh; 
+                margin: 10vh auto; 
+                border-radius: 1.5rem; 
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); 
+            }
+            /* Ajustar vistas internas para el nuevo alto */
+            .view {
+                height: 100%;
+            }
+            /* La vista de auth no necesita ocupar todo el viewport height */
+            #auth-view {
+                min-height: 80vh;
+            }
+        }
+
+        /* Clase base para las vistas, para transiciones */
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+            transform: translateX(100%); 
+            padding-bottom: 2rem;
+        }
+
+        /* Clase para la vista activa */
+        .view.active {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <!-- Las vistas serán inyectadas y animadas por JavaScript -->
+    </div>
+
+    <script>
+        // --- MOCK DATA SIMULADA ---
+        const MOCK_CITIES = [
+            { id: 1, name: 'Ciudad de México', temp: 18, condition: 'Parcialmente Nublado', icon: 'cloud', max: 22, min: 14 },
+            { id: 2, name: 'Buenos Aires', temp: 25, condition: 'Soleado', icon: 'sun', max: 27, min: 19 },
+            { id: 3, name: 'Madrid', temp: 12, condition: 'Lluvia Ligera', icon: 'cloud-drizzle', max: 15, min: 9 },
+            { id: 4, name: 'Bogotá', temp: 15, condition: 'Tormenta Eléctrica', icon: 'cloud-lightning', max: 17, min: 11 },
+            { id: 5, name: 'Lima', temp: 21, condition: 'Niebla', icon: 'cloud-fog', max: 23, min: 18 },
+            { id: 6, name: 'Tokio', temp: 28, condition: 'Claro', icon: 'cloud-sun', max: 30, min: 24 },
+            { id: 7, name: 'Londres', temp: 17, condition: 'Llovizna', icon: 'cloud-drizzle', max: 19, min: 13 },
+            { id: 8, name: 'Nueva York', temp: 24, condition: 'Soleado', icon: 'sun', max: 28, min: 20 },
+        ];
+
+        // MOCK de pronóstico semanal para la vista de detalle
+        const MOCK_WEEKLY_FORECAST = [
+            { day: 'Hoy', date: '21/08', icon: 'cloud-drizzle', max: 22, min: 14 },
+            { day: 'Mañana', date: '22/08', icon: 'cloud', max: 20, min: 13 },
+            { day: 'Sáb', date: '23/08', icon: 'sun', max: 25, min: 16 },
+            { day: 'Dom', date: '24/08', icon: 'cloud-rain', max: 18, min: 12 },
+            { day: 'Lun', date: '25/08', icon: 'sun', max: 26, min: 17 },
+            { day: 'Mar', date: '26/08', icon: 'cloud-wind', max: 23, min: 15 },
+            { day: 'Mié', date: '27/08', icon: 'cloud', max: 21, min: 14 },
+        ];
+
+        // --- ESTADO DE LA APLICACIÓN ---
+        let state = {
+            view: 'auth', // 'auth', 'dashboard', 'detail'
+            authMode: 'login', // 'login' or 'signup'
+            selectedCity: null, // Ciudad seleccionada para la vista de detalle
+            prevView: null, // Para la lógica de transición
+        };
+
+        const appRoot = document.getElementById('app');
+
+        /**
+         * Renders a Lucide icon with Tailwind classes.
+         * @param {string} name - Icon name (e.g., 'sun').
+         * @param {string} classes - Tailwind classes.
+         * @returns {string} HTML of the icon.
+         */
+        const renderIcon = (name, classes = 'w-6 h-6') => {
+            return `<i data-lucide="${name}" class="${classes} inline-block"></i>`;
+        };
+
+        /**
+         * Central function to update state and re-render with transitions.
+         * @param {object} newState - Object with properties to update.
+         */
+        const setState = (newState) => {
+            const currentView = state.view;
+            const nextView = newState.view || currentView;
+
+            // Logic to simulate sliding transition
+            let transitionDirection = null; // 'forward' (dashboard -> detail) or 'backward' (detail -> dashboard)
+            if (currentView === 'dashboard' && nextView === 'detail') {
+                transitionDirection = 'forward';
+            } else if (currentView === 'detail' && nextView === 'dashboard') {
+                transitionDirection = 'backward';
+            } else if (currentView === 'auth' && nextView === 'dashboard') {
+                 transitionDirection = 'forward';
+            }
+
+            state = { ...state, ...newState, prevView: currentView };
+            
+            renderView(transitionDirection);
+            
+            // Ensures Lucide replaces <i> tags with SVGs
+            setTimeout(lucide.createIcons, 50); 
+        };
+
+        // --- VISTA 1: AUTENTICACIÓN (LOGIN / SIGN-UP) ---
+        const AuthView = () => {
+            const isLogin = state.authMode === 'login';
+            const title = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta';
+            const buttonText = isLogin ? 'Entrar a la App' : 'Registrarse';
+            const toggleText = isLogin ? '¿No tienes cuenta? Regístrate.' : '¿Ya tienes cuenta? Inicia Sesión.';
+
+            return `
+                <div id="auth-view" class="h-full flex flex-col justify-center items-center p-8 bg-white">
+                    <div class="w-full max-w-sm text-center">
+                        <!-- Application Title or simple logo -->
+                        <div class="text-4xl font-extrabold text-indigo-600 mb-2">
+                            ${renderIcon('cloud-sun', 'w-10 h-10 mx-auto')} 
+                            <span class="block mt-1 tracking-widest text-base font-semibold">WEATHERAPP</span>
+                        </div>
+                        <h1 class="text-2xl font-light mb-10 text-gray-800">${title}</h1>
+
+                        <form onsubmit="event.preventDefault(); setState({ view: 'dashboard' });" class="space-y-6">
+                            <!-- Username Field -->
+                            <div class="relative">
+                                <input type="text" placeholder="Nombre de usuario" required 
+                                    class="w-full p-3 border-b-2 border-gray-200 focus:border-indigo-600 focus:ring-0 outline-none transition duration-150 rounded-t-lg">
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="relative">
+                                <input type="password" placeholder="Contraseña" required 
+                                    class="w-full p-3 border-b-2 border-gray-200 focus:border-indigo-600 focus:ring-0 outline-none transition duration-150 rounded-t-lg">
+                            </div>
+
+                            <!-- Primary Call to Action Button -->
+                            <button type="submit" 
+                                class="w-full py-4 mt-10 bg-indigo-600 text-white font-bold rounded-xl shadow-lg hover:bg-indigo-700 active:bg-indigo-800 transition duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                                ${buttonText}
+                            </button>
+                        </form>
+
+                        <!-- Navigation: Secondary simple text link -->
+                        <button onclick="setState({ authMode: '${isLogin ? 'signup' : 'login'}' })" 
+                            class="mt-8 text-sm text-gray-500 hover:text-indigo-600 active:text-indigo-700 transition duration-150 p-2">
+                            ${toggleText}
+                        </button>
+                    </div>
+                </div>
+            `;
+        };
+
+        // --- VISTA 2: DASHBOARD PRINCIPAL (LISTADO DE CIUDADES) ---
+        const DashboardView = () => {
+            // Se redujo el padding de p-5 a p-4 para compactar el espacio vertical en las tarjetas
+            const cityListHtml = MOCK_CITIES.map(city => `
+                <!-- Minimalist City Card (High Contrast and Large Touch Area) -->
+                <div onclick="setState({ view: 'detail', selectedCity: ${city.id} })"
+                    class="flex justify-between items-center p-4 bg-white border border-gray-100 rounded-2xl shadow-md hover:shadow-lg transition duration-200 cursor-pointer active:scale-[0.99] transform">
+                    
+                    <!-- Left: City Name -->
+                    <div class="flex flex-col">
+                        <span class="text-xl font-medium text-gray-800">${city.name}</span>
+                        <div class="flex items-center text-sm text-gray-500 mt-1">
+                             ${renderIcon(city.icon, 'w-4 h-4 mr-2')}
+                             <span>${city.condition}</span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Current Temperature (Large and Bold Typography) -->
+                    <div class="text-right">
+                        <span class="text-5xl font-extrabold text-indigo-600">${city.temp}°</span>
+                    </div>
+                </div>
+            `).join('');
+
+
+            return `
+                <div id="dashboard-view" class="p-5 pt-8 overflow-y-auto h-full">
+                    
+                    <!-- Header con Username y Logout -->
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-lg font-semibold text-gray-700">Hola, UsuarioDemo!</span>
+                        <button onclick="setState({ view: 'auth', authMode: 'login' })"
+                            class="flex items-center text-sm text-gray-500 hover:text-red-600 transition duration-150 p-2 rounded-xl active:bg-red-50/50">
+                            ${renderIcon('log-out', 'w-4 h-4 mr-1')}
+                            Cerrar Sesión
+                        </button>
+                    </div>
+
+                    <!-- Use ample whitespace for visual separation -->
+                    <h1 class="text-3xl font-light text-gray-800 mb-8">Pronóstico Global</h1>
+                    
+                    <!-- Prominent and Persistent Search Bar -->
+                    <!-- Se redujo el padding de p-4 a p-3 para compactar el espacio vertical -->
+                    <div class="mb-8"> 
+                        <button onclick="alert('Funcionalidad de búsqueda simulada.')"
+                            class="w-full flex items-center p-3 bg-gray-100 text-gray-500 rounded-2xl shadow-inner focus:ring-2 focus:ring-indigo-300 transition duration-150 active:bg-gray-200">
+                            ${renderIcon('search', 'w-5 h-5 mr-3')}
+                            <span>Buscar Ciudad...</span>
+                        </button>
+                    </div>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-5">Ciudades Populares</h2>
+                    
+                    <!-- Contenedor para la lista de ciudades -->
+                    <!-- Mobile: Stacked (space-y-4) | Desktop (md): 3 Columns Grid (para reducir el scroll) -->
+                    <div class="space-y-4 md:grid md:grid-cols-3 md:gap-4 pb-10">
+                        ${cityListHtml}
+                    </div>
+                </div>
+            `;
+        };
+
+        // --- VISTA 3: DETALLE DE CIUDAD Y PRONÓSTICO SEMANAL ---
+        const DetailView = () => {
+            const city = MOCK_CITIES.find(c => c.id === state.selectedCity) || MOCK_CITIES[0];
+            
+            // Nuevo HTML para el pronóstico semanal: Tarjeta vertical compacta para usar en la rejilla horizontal
+            const weeklyForecastHtml = MOCK_WEEKLY_FORECAST.map(day => `
+                <!-- Compact Daily Forecast Card -->
+                <div class="flex flex-col items-center justify-between p-3 rounded-xl border border-gray-100 shadow-sm 
+                            md:shadow-none md:border-none md:p-1 md:hover:bg-gray-100 transition duration-150 cursor-pointer active:scale-[0.98] transform">
+                    <!-- Day Name -->
+                    <span class="text-sm font-semibold text-gray-700 mb-1">${day.day}</span>
+                    <!-- Icon -->
+                    <div class="text-indigo-500 my-2">
+                        ${renderIcon(day.icon, 'w-6 h-6 md:w-8 md:h-8')}
+                    </div>
+                    <!-- Temp Range -->
+                    <div class="flex flex-col items-center">
+                        <span class="text-base font-bold text-gray-800">${day.max}°</span>
+                        <span class="text-sm font-light text-gray-400">${day.min}°</span>
+                    </div>
+                </div>
+            `).join('');
+
+
+            return `
+                <div id="detail-view" class="p-5 pt-8 overflow-y-auto h-full">
+                    
+                    <!-- Back Button (Siempre visible en la parte superior izquierda, se ajusta al flujo) -->
+                    <button onclick="setState({ view: 'dashboard', selectedCity: null })" 
+                        class="text-gray-600 hover:text-indigo-600 mb-8 p-2 -ml-2 rounded-full transition duration-150 active:scale-95 transform">
+                        ${renderIcon('chevron-left', 'w-8 h-8')}
+                    </button>
+
+                    <!-- CONTENEDOR PRINCIPAL: Flex vertical en móvil, Flex horizontal en escritorio (md) -->
+                    <div class="flex flex-col md:flex-row md:space-x-12 h-full">
+                        
+                        <!-- Columna Izquierda (Móvil: Arriba, Escritorio: 1/3 Ancho) -->
+                        <div class="md:w-1/3 md:border-r md:pr-8 md:flex md:flex-col md:justify-start md:mt-4">
+                             
+                            <!-- City Header and Current Weather -->
+                            <div class="text-center mb-12">
+                                <h1 class="text-4xl font-bold text-gray-800">${city.name}</h1>
+                                <p class="text-lg font-light text-gray-500 mt-2">${city.condition}</p>
+                                
+                                <!-- Current Temperature (Focus) -->
+                                <div class="my-10 flex justify-center items-end">
+                                    <div class="text-[6rem] leading-none font-extrabold text-indigo-600">${city.temp}</div>
+                                    <div class="text-5xl font-light text-indigo-600 self-start mt-2">°C</div>
+                                </div>
+
+                                <!-- Icon and Daily Range (More prominent) -->
+                                <div class="flex flex-col items-center space-y-2 text-gray-500">
+                                    ${renderIcon(city.icon, 'w-8 h-8 text-indigo-500')}
+                                    <span class="text-xl font-medium">Máx: ${city.max}° / Mín: ${city.min}°</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha (Móvil: Abajo, Escritorio: 2/3 Ancho) -->
+                        <div class="md:w-2/3 md:pt-4">
+                            <!-- Weekly Forecast (7 Days - Responsive Grid) -->
+                            <div class="mt-4 md:mt-0">
+                                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Pronóstico de 7 Días</h2>
+                                
+                                <!-- MOBILE: Stacked (space-y-2) with shadow and border -->
+                                <!-- DESKTOP: Horizontal 7-column grid to maximize space and avoid scroll -->
+                                <div class="md:grid md:grid-cols-7 md:gap-1 space-y-2 md:space-y-0 p-2 md:p-0 
+                                            rounded-xl border border-gray-100 shadow-sm md:border-none md:shadow-none">
+                                    ${weeklyForecastHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Whitespace at the end (Oculto en escritorio) -->
+                    <div class="h-10 md:hidden"></div>
+                </div>
+            `;
+        };
+
+        // --- MAIN RENDER FUNCTION (WITH ANIMATION) ---
+        const renderView = (transitionDirection) => {
+            let nextHtml;
+            const nextViewId = state.view + '-view';
+
+            switch (state.view) {
+                case 'auth': nextHtml = AuthView(); break;
+                case 'dashboard': nextHtml = DashboardView(); break;
+                case 'detail': nextHtml = DetailView(); break;
+                default: setState({ view: 'auth' }); return;
+            }
+
+            // Create the new view temporarily
+            const newView = document.createElement('div');
+            newView.id = nextViewId;
+            newView.className = 'view';
+            newView.innerHTML = nextHtml;
+
+            const currentActiveView = appRoot.querySelector('.view.active');
+
+            if (currentActiveView) {
+                // Prepare the new view for animation
+                if (transitionDirection === 'forward') {
+                    newView.style.transform = 'translateX(100%)';
+                } else if (transitionDirection === 'backward') {
+                    newView.style.transform = 'translateX(-100%)';
+                }
+
+                appRoot.appendChild(newView);
+
+                // Apply transitions in the next animation frame
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        // 1. Move the current view
+                        if (transitionDirection === 'forward') {
+                            currentActiveView.style.transform = 'translateX(-100%)';
+                        } else if (transitionDirection === 'backward') {
+                            currentActiveView.style.transform = 'translateX(100%)';
+                        }
+                        
+                        // 2. Move the new view to the active position (0)
+                        newView.style.transform = 'translateX(0)';
+                        newView.classList.add('active');
+                        currentActiveView.classList.remove('active');
+
+                        // 3. Clean up views after transition
+                        setTimeout(() => {
+                            // Clean up all views that are not active
+                            Array.from(appRoot.querySelectorAll('.view:not(.active)')).forEach(oldView => {
+                                appRoot.removeChild(oldView);
+                            });
+                        }, 350); // Time slightly longer than the CSS transition duration
+                    });
+                });
+            } else {
+                // Initial render
+                appRoot.innerHTML = nextHtml;
+                appRoot.querySelector(`#${nextViewId}`).classList.add('active');
+            }
+        };
+
+        // Initialize the application in the authentication view
+        window.onload = () => {
+            renderView();
+            lucide.createIcons();
+        };
+
+        // Expose setState globally so it works with onClick events in HTML
+        window.setState = setState;
+        window.alert = (msg) => console.log('Alerta Simulada:', msg); // Replace alert() with console.log
+    </script>
+
+</body>
+</html>

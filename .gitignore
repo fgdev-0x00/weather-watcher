@@ -1,0 +1,11 @@
+requests.http
+backend/.env
+backend/node_modules
+backend/package-lock.json
+
+frontend/.env
+frontend/node_modules
+frontend/package-lock.json
+
+
+reqs
