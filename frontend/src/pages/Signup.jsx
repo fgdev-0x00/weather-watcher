@@ -11,7 +11,6 @@ export default function Signup() {
   const notify = useNotify();
   const [loading, setLoading] = useState(false);
 
-  // 🧠 Hook de formulario (ESCALABLE)
   const {
     form,
     errors,
@@ -27,7 +26,6 @@ export default function Signup() {
     }
   );
 
-  // 📤 Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isValid) return;
@@ -44,7 +42,6 @@ export default function Signup() {
     }
   };
 
-  // 🎨 UI
   return (
     <AuthForm
       title="Crear Cuenta"

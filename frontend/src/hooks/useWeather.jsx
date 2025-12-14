@@ -1,22 +1,16 @@
-// src/hooks/useWeather.js
 import { useEffect, useState } from 'react';
 import { weatherService } from '../services/weather.service';
 import { useNotify } from '../context/NotifyContext';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Hook para cargar el pronóstico de las ciudades populares.
- * @returns {{ cities: Array<object>, loading: boolean, error: string | null }}
- */
 export function useWeather() {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const notify = useNotify();
-  const { user } = useAuth(); // Usamos 'user' para recargar si el usuario cambia (o solo si está logeado)
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Solo cargamos si el usuario está autenticado
     if (!user) {
         setLoading(false);
         setCities([]);

@@ -4,7 +4,6 @@ export const required = (msg = 'Campo requerido') => (value) =>
 export const minLength = (len, msg) => (value) =>
   value && value.length < len ? msg : null;
 
-// Ejemplos futuros:
 export const isEmail = (msg = 'Email inválido') => (value) =>
   value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? msg : null;
 

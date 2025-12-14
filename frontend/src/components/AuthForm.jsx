@@ -46,7 +46,6 @@ export default function AuthForm({
             )}
           </div>
 
-          {/* Password */}
           <div>
             <input
               type="password"

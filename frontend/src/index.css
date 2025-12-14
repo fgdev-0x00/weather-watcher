@@ -1,40 +1,28 @@
 @import "tailwindcss";
 
-/* ===============================
-   DESIGN TOKENS (MOCKUP WEATHER)
-   =============================== */
 @theme {
-  /* Backgrounds */
   --color-bg-main: #f9fafb;
   --color-bg-card: #ffffff;
   --color-bg-muted: #f3f4f6;
 
-  /* Text */
   --color-text-main: #1f2937;
   --color-text-muted: #6b7280;
   --color-text-light: #9ca3af;
 
-  /* Accent (purple / indigo) */
   --color-accent: #4f46e5;
   --color-accent-hover: #4338ca;
 
-  /* Borders */
   --color-border-soft: #e5e7eb;
 
-  /* Shadows */
   --shadow-card: 0 8px 20px rgba(0,0,0,0.06);
   --shadow-card-hover: 0 12px 30px rgba(0,0,0,0.10);
   --shadow-inset-soft: inset 0 2px 4px rgba(0,0,0,0.06);
 
-  /* Radius */
   --radius-xl: 1rem;
   --radius-2xl: 1.25rem;
   --radius-3xl: 1.5rem;
 }
 
-/* ===============================
-   BASE
-   =============================== */
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
@@ -72,9 +60,6 @@
   animation: slide-in 0.25s ease-out;
 }
 
-/* ===============================
-   COMPONENTS (utility-like)
-   =============================== */
 @layer components {
   .card {
     background: var(--color-bg-card);
