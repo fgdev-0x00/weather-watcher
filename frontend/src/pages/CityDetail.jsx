@@ -1,17 +1,37 @@
+// src/pages/CityDetail.jsx (MODIFICADO)
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CloudSun } from 'lucide-react';
-import { CITIES, WEEKLY } from '../data/mock';
+import { ArrowLeft } from 'lucide-react'; // Ya no necesitamos CloudSun, Sun, Cloud, CloudRain aquí
 import ForecastCard from '../components/ForecastCard';
+import { useWeather } from '../hooks/useWeather'; 
+import { getWeatherIcon } from '../utils/weatherIcons'; // 💡 IMPORTAR LA FUNCIÓN GLOBAL
+import { toTitleCase } from '../utils/formatters';
 
 export default function CityDetail() {
-  const { id } = useParams();
+  const { id: cityNameParam } = useParams(); 
   const navigate = useNavigate();
+  const { cities, loading, error } = useWeather(); 
 
-  const city = CITIES.find(c => c.id === Number(id));
+  if (loading) {
+    return <div className="p-5 text-center text-indigo-600">Cargando detalle...</div>;
+  }
+  
+  if (error) {
+    return <div className="p-5 text-center text-red-600">Error al cargar el detalle del clima.</div>;
+  }
 
-  if (!city) {
+  const cityData = cities.find(c => c.city_name.toLowerCase() === cityNameParam.toLowerCase());
+
+  if (!cityData) {
     return <p className="p-5">Ciudad no encontrada</p>;
   }
+
+  // 💡 Extraer las claves con los nuevos nombres
+  const { city_name, seven_day_forecast, temp, condition, max, min } = cityData; 
+  const formattedCityName = toTitleCase(city_name);
+  
+  // 💡 NOTA: Ya NO necesitamos extraer Max/Min del seven_day_forecast[0] 
+  // porque el backend ahora los envía como 'max' y 'min' en el objeto principal.
+  // La extracción de { max, min } de cityData ya es correcta.
 
   return (
     <div className="h-full p-5 pt-8">
@@ -29,18 +49,18 @@ export default function CityDetail() {
 
           {/* CITY NAME */}
           <h1 className="text-4xl font-bold mb-2">
-            {city.name}
+            {formattedCityName} 
           </h1>
 
           {/* CONDITION */}
           <p className="text-gray-500 text-lg mb-8">
-            {city.condition}
+            {condition} 
           </p>
 
           {/* TEMP */}
           <div className="flex items-start text-indigo-600 mb-6">
             <span className="text-[6rem] font-extrabold leading-none">
-              {city.temp}
+              {temp} 
             </span>
 
             <span className="text-6xl font-semibold ml-1 mt-2">
@@ -49,11 +69,11 @@ export default function CityDetail() {
           </div>
 
           {/* ICON */}
-          <CloudSun className="w-12 h-12 text-indigo-500 mb-6" />
+          {getWeatherIcon(condition, "w-12 h-12 mb-6")} {/* 💡 Usar el helper */}
 
           {/* MIN / MAX */}
           <div className="text-xl font-medium text-gray-500">
-            Máx: {city.max}° / Mín: {city.min}°
+            Máx: {max}° / Mín: {min}° 
           </div>
         </div>
 
@@ -69,12 +89,15 @@ export default function CityDetail() {
           <div className="h-px bg-gray-200 mb-6" />
 
           {/* FORECAST GRID */}
-          <div className="grid md:grid-cols-7 gap-4">
+          <div className="grid md:grid-cols-5 gap-4">
 
-            {WEEKLY.map(day => (
+            {seven_day_forecast.map((day, index) => (
               <ForecastCard
-                key={day.day}
-                {...day}
+                key={index}
+                date={day.date}
+                max={day.max}
+                min={day.min}
+                condition={day.condition}
               />
             ))}
           </div>

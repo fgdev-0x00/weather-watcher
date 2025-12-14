@@ -1,5 +1,5 @@
 export const POPULAR_CITIES = [
-  'mexico city',
+  'ciudad de mexico',
   'guadalajara',
   'monterrey',
   'puebla',

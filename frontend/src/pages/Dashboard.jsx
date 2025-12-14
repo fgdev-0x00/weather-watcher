@@ -1,12 +1,44 @@
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CityCard from '../components/CityCard';
-import { CITIES } from '../data/mock';
 import { Search } from 'lucide-react';
+import { useWeather } from '../hooks/useWeather'; 
+import CityCardSkeleton from '../components/CityCardSkeleton'; // 💡 Importación del Skeleton
+
+const SKELETON_COUNT = 9; // Número de esqueletos a mostrar (basado en el diseño)
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { cities, loading, error } = useWeather();
 
+  // ----------------------------------------------------
+  // 💡 LÓGICA DE RENDERING CONDICIONAL DE CARGA/ERROR
+  // ----------------------------------------------------
+
+  if (error) {
+    return (
+      <div className="h-full flex items-center justify-center flex-col p-5">
+        <p className="text-xl text-red-600 mb-4">Error al cargar el clima: {error}</p>
+        <p className="text-gray-500">Intente recargar la página.</p>
+      </div>
+    );
+  }
+
+  // 💡 Determinar qué tarjetas renderizar: Skeletons o datos reales
+  const cardsToRender = loading 
+    ? [...Array(SKELETON_COUNT)].map((_, index) => <CityCardSkeleton key={index} />)
+    : cities.map((cityData) => (
+        <CityCard
+          key={cityData.city_name} 
+          city={cityData}
+          onClick={() => navigate(`/city/${cityData.city_name}`)}
+        />
+      ));
+
+  // ----------------------------------------------------
+  // 💡 FIN LÓGICA DE RENDERING
+  // ----------------------------------------------------
+  
   return (
     <div className="h-full flex flex-col px-5 pb-8">
 
@@ -28,6 +60,7 @@ export default function Dashboard() {
             type="text"
             placeholder="Buscar Ciudad..."
             className="w-full bg-transparent outline-none"
+            disabled={loading} // 💡 Desactivar la búsqueda mientras carga
           />
         </div>
       </div>
@@ -39,13 +72,7 @@ export default function Dashboard() {
 
       {/* CARDS GRID */}
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {CITIES.map(city => (
-          <CityCard
-            key={city.id}
-            city={city}
-            onClick={() => navigate(`/city/${city.id}`)}
-          />
-        ))}
+        {cardsToRender} {/* 💡 Renderiza los Skeletons o las CityCards */}
       </div>
     </div>
   );

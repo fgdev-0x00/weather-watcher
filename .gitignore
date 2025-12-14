@@ -2,7 +2,7 @@ requests.http
 backend/.env
 backend/node_modules
 backend/package-lock.json
-backend/weather.cache.json
+backend/local_cache_store.json
 
 frontend/.env
 frontend/node_modules
