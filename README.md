@@ -51,6 +51,8 @@ Además de mencionar que usaría React para hacer el diseño más compatible con
 
 Con el diseño generado, lo descargué como HTML para usarlo como **mockup**, el mismo que fue utilizado para crear los componentes y estructura básica de React con Tailwind, generando también los estilos globales y paleta de colores del proyecto basado en el mockup generado.
 
+<img width="1218" height="847" alt="Captura de pantalla 2025-12-14 013902" src="https://github.com/user-attachments/assets/2f53582c-c339-4862-8bcf-bb8f34336533" />
+
 --
 
 Otro uso del modelo fue generar la estructura de Docker para usarlo con Docker Compose; aquí generó los dos servicios (frontend y backend), así como los respectivos Dockerfiles.
