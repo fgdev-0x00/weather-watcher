@@ -4,6 +4,16 @@
   "description": "Backend service for check city weather",
   "main": "server.js",
   "type": "module",
+  "imports": {
+    "#services/*": "./src/services/*.js",
+    "#controllers/*": "./src/controllers/*.js",
+    "#middlewares/*": "./src/middlewares/*.js",
+    "#routes/*": "./src/routes/*.js",
+    "#utils/*": "./src/utils/*.js",
+    "#data/*": "./src/data/*.js",
+    "#libs/*": "./src/libs/*.js",
+    "#config/*": "./src/config/*.js"
+  },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js"

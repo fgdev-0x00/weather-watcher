@@ -1,12 +1,10 @@
-import { users } from '../data/users.memory.js';
+import { getUser } from "#utils/users";
 
-console.log('USERS');
-
-async function getUserService(userId) {
-  const user = users.find(u => u.id === userId);
+const getUserService = async(userId) => {
+  const user = getUser(userId);
   if (!user) throw new Error('User not found');
 
-  return {
+  return {  
     username: user.username
   };
 }

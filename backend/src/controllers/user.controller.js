@@ -1,8 +1,10 @@
-import { getUserService } from '../services/user.service.js';
+import { getUserService } from '#services/user.service';
 
-async function getUserController(req, res) {
+const getUserController = async (req, res) => {
   try {
-    const data = await getUserService(req.user.userId);
+    const userId = req.user.userId;
+    
+    const data = await getUserService(userId);
     return res.status(200).json({
       success: true,
       data,

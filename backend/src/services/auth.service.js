@@ -1,37 +1,38 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
-import { users } from '../data/users.memory.js';
+import { findUser, saveUser } from '#utils/users';
+import { generateHash, compareHash } from '#utils/crypto';
+import { generateToken } from '#utils/auth';
 
-export async function registerService({ username, password }) {
-  const exists = users.find(u => u.username === username);
+
+const registerService = async ({ username, password }) => {
+  //Mock User DB
+  const exists = findUser(username);
   if (exists) throw new Error('User already exists');
 
-  const hashedPassword = await bcrypt.hash(password.trim(), 10);
+  const hashedPassword = await generateHash(password);
 
   const user = {
     id: uuid(),
-    username: username.trim(),
-    password: hashedPassword
+    username: username,
+    password: hashedPassword,
   };
 
-  users.push(user);
+  saveUser(user);
 
-  return { id: user.id, username: user.username };
+  return { status:'Success'};
 }
 
-export async function loginService({ username, password }) {
-  const user = users.find(u => u.username === username);
+const loginService = async ({ username, password }) => {
+  //Mock User DB
+  const user = findUser(username);
   if (!user) throw new Error('Invalid credentials');
 
-  const isValid = await bcrypt.compare(password, user.password);
+  const isValid = await compareHash(password, user.password);
   if (!isValid) throw new Error('Invalid credentials');
 
-  const token = jwt.sign(
-    { userId: user.id },
-    process.env.JWT_SECRET || 'dev_secret',
-    { expiresIn: '1h' }
-  );
+  const token = generateToken(user.id);
 
   return { token };
 }
+
+export { registerService, loginService };
