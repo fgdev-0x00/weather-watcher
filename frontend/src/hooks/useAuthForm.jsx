@@ -5,11 +5,11 @@ const useAuthForm = (initialValues, validators = {}) => {
   const [touched, setTouched] = useState({});
 
   const handleChange = (name, value) => {
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleBlur = (name) => {
-    setTouched((prev) => ({ ...prev, [name]: true }));
+    setTouched(prev => ({ ...prev, [name]: true }));
   };
 
   const errors = useMemo(() => {
@@ -42,6 +42,6 @@ const useAuthForm = (initialValues, validators = {}) => {
     handleBlur,
     setForm,
   };
-}
+};
 
 export default useAuthForm;

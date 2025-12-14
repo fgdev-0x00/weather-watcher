@@ -1,14 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import ForecastCard from '../components/ForecastCard';
-import { useWeather } from '../hooks/useWeather'; 
+import { useWeatherContext } from '../context/WeatherContext';
 import { getWeatherIcon } from '../utils/weatherIcons';
 import { toTitleCase } from '../utils/formatters';
 
 export default function CityDetail() {
   const { id: cityNameParam } = useParams(); 
   const navigate = useNavigate();
-  const { cities, loading, error } = useWeather(); 
+const { cities, loading, error } = useWeatherContext();
 
   if (loading) {
     return <div className="p-5 text-center text-indigo-600">Cargando detalle...</div>;

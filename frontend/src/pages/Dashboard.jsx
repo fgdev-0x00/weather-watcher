@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CityCard from '../components/CityCard';
 import { Search } from 'lucide-react';
-import { useWeather } from '../hooks/useWeather'; 
+import { useWeatherContext } from '../context/WeatherContext';
 import CityCardSkeleton from '../components/CityCardSkeleton';
 
 const SKELETON_COUNT = 9;
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { cities, loading, error } = useWeather();
+  const { cities, loading, error } = useWeatherContext();
 
   if (error) {
     return (

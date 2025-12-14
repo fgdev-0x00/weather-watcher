@@ -7,33 +7,57 @@ export function useWeather() {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const notify = useNotify();
-  const { user } = useAuth();
+  const { user } = useAuth(); 
 
   useEffect(() => {
-    if (!user) {
-        setLoading(false);
-        setCities([]);
-        return;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let isMounted = true; 
+    
+    if (!user) { 
+      setLoading(false);
+      setCities([]);
+      return () => { 
+        isMounted = false; 
+        controller.abort(); 
+      }; 
     }
     
     const fetchCities = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await weatherService.getPopularCities();
-        setCities(data);
+        const data = await weatherService.getPopularCities({ signal }); 
+        
+        if (isMounted) {
+          setCities(data);
+        }
       } catch (err) {
+        if (err.code === 'ERR_CANCELED' || err.name === 'AbortError' || err.isCancel) { 
+            return; 
+        }
+
         console.error('Error fetching weather data:', err);
-        setError(err.message || 'No se pudo cargar el pronóstico.');
-        notify.error('Error al cargar datos del clima.');
+        if (isMounted) {
+          setError(err.message || 'No se pudo cargar el pronóstico.');
+          notify.error('Error al cargar datos del clima.');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchCities();
-  }, [user, notify]);
+
+    return () => {
+      isMounted = false;
+      controller.abort(); 
+    };
+  }, [user]); 
 
   return { cities, loading, error };
 }

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { WeatherProvider } from './context/WeatherContext';
 import { NotifyProvider } from './context/NotifyContext';
 
 import Auth from './pages/Auth';
@@ -13,32 +14,32 @@ export default function App() {
   return (
     <NotifyProvider>
       <AuthProvider>
-        <AppContainer>
-          <Routes>
-            <Route path="/login" element={<Auth />} />
-            <Route path="/signup" element={<Signup />} />
+        <WeatherProvider>
+          <AppContainer>
+            <Routes>
+              <Route path="/login" element={<Auth />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/city/:id"
-              element={
-                <ProtectedRoute>
-                  <CityDetail />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </AppContainer>
+              <Route
+                path="/city/:id"
+                element={
+                  <ProtectedRoute>
+                    <CityDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+          </AppContainer>
+        </WeatherProvider>
       </AuthProvider>
     </NotifyProvider>
   );
