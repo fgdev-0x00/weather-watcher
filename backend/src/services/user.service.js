@@ -2,7 +2,7 @@ import { getUser } from "#utils/users";
 
 const getUserService = async(userId) => {
   const user = getUser(userId);
-  if (!user) throw new Error('User not found');
+  if (!user) return null;
 
   return {  
     username: user.username

@@ -15,7 +15,7 @@
     "#config/*": "./src/config/*.js"
   },
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "nodemon --ignore local_cache_store.json server.js",
     "start": "node server.js"
   },
   "dependencies": {
