@@ -40,7 +40,7 @@ export default function Dashboard() {
         Pronóstico Global
       </h1>
 
-      {/* <div className="mt-8">
+      <div className="mt-8">
         <div className="input-search w-full lg:max-w-4xl">
           <Search className="w-5 h-5 text-gray-400" />
           <input
@@ -50,7 +50,7 @@ export default function Dashboard() {
             disabled={loading}
           />
         </div>
-      </div> */}
+      </div>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-10 mb-6">
         Ciudades Populares

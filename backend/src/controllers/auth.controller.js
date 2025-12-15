@@ -16,16 +16,16 @@ const register = async (req, res) => {
   try {
     const userPayload = req.body;
     if(!checkRequiredFields(userPayload, requiredFields)) {
-      res.status(400).json({ success: false, message: 'Requirted Field Missing' });
+      return res.status(400).json({ success: false, message: 'Requirted Field Missing' });
     }
 
     const parsedPayload = parsePayload(userPayload);
     const user = await registerService(parsedPayload);
 
-    res.status(201).json({ success: true, data: user });
+    return res.status(201).json({ success: true, data: user });
   } catch (err) {
     console.log('error: ', err);
-    res.status(400).json({ success: false, message: err.message });
+    return res.status(400).json({ success: false, message: err.message });
   }
 }
 
@@ -33,15 +33,15 @@ const login = async (req, res) => {
   try {
     const userPayload = req.body;
     if(!checkRequiredFields(userPayload, requiredFields)) {
-      res.status(400).json({ success: false, message: 'Requirted Field Missing' });
+      return res.status(400).json({ success: false, message: 'Requirted Field Missing' });
     }
 
     const parsedPayload = parsePayload(userPayload);
     const result = await loginService(parsedPayload);
 
-    res.status(200).json({ success: true, data: result });
+    return res.status(200).json({ success: true, data: result });
   } catch (err) {
-    res.status(401).json({ success: false, message: err.message });
+    return res.status(401).json({ success: false, message: err.message });
   }
 }
 

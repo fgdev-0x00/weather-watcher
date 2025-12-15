@@ -1,13 +1,17 @@
 import { createHttpClient } from './client.js';
 
 export const placesClient = createHttpClient({
-  baseURL: 'https://search.reservamos.mx/api/v2/places',
+  baseURL: 'https://search.reservamos.mx/api/v2',
 });
 
+const filterCities = (allResponse) => {
+  return allResponse.filter((record) => record.result_type == 'city');
+};
+
 const getCities = async() => {
-    const response = await placesClient.get() || [];
+    const response = await placesClient.get('/places') || [];
     
-    const filteredCities = response.filter((record) => record.result_type == 'city');
+    const filteredCities = filterCities(response);
 
     return filteredCities;
 };

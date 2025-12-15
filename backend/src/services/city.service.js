@@ -18,7 +18,6 @@ const getWeather = async(lat, lon) => {
     }
 } 
 
-
 const getPopularCities = async () => {
     const allCitiesKey = 'ALL_CITIES';
     
