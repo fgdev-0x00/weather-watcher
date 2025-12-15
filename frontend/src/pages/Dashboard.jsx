@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import CityCard from '../components/CityCard';
-import { Search } from 'lucide-react';
 import { useWeatherContext } from '../context/WeatherContext';
 import CityCardSkeleton from '../components/CityCardSkeleton';
 
@@ -39,18 +38,6 @@ export default function Dashboard() {
       <h1 className="text-3xl font-light text-gray-900 mt-6">
         Pronóstico Global
       </h1>
-
-      <div className="mt-8">
-        <div className="input-search w-full lg:max-w-4xl">
-          <Search className="w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Buscar Ciudad..."
-            className="w-full bg-transparent outline-none"
-            disabled={loading}
-          />
-        </div>
-      </div>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-10 mb-6">
         Ciudades Populares

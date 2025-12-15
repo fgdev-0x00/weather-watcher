@@ -4,6 +4,7 @@ import LogoBanner from './LogoBanner';
 
 export default function AuthForm({
   title,
+  action,
   form,
   errors,
   touched,
@@ -22,7 +23,7 @@ export default function AuthForm({
   const handleFormSubmit = (e) => {
     if (!isFormValid || loading) {
       e.preventDefault();
-      return;
+      return;  
     }
 
     onSubmit(e);
@@ -64,6 +65,12 @@ export default function AuthForm({
               onBlur={() => handleBlur('password')}
               className="w-full p-3 border-b-2 border-gray-200 focus:border-indigo-600 outline-none"
             />
+            {action == "signup" && (
+              <p className="mt-1 text-sm text-gray-500">
+                Minimo 8 caracteres
+              </p>
+            )}
+
 
             {touched?.password && errors?.password && (
               <p className="mt-1 text-sm text-red-500">

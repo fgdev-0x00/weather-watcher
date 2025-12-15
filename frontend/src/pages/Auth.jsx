@@ -45,6 +45,7 @@ export default function Auth() {
   return (
     <AuthForm
       title="Iniciar Sesión"
+      action="login"
       form={form}
       errors={errors}
       touched={touched}

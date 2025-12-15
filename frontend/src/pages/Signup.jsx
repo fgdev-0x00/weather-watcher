@@ -45,6 +45,7 @@ export default function Signup() {
   return (
     <AuthForm
       title="Crear Cuenta"
+      action="signup"
       form={form}
       errors={errors}
       touched={touched}
