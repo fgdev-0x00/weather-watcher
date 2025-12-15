@@ -21,6 +21,8 @@ docker compose up -d
 
 Con esto, los servicios deben ejecutarse frontend en puerto `5173` y backend en el puerto `3000`.
 
+Para ingresar a la app desde el navegador, se debe ir a la URL `127.0.0.1:5173`, esto debe mostrar la pantalla de login.
+
 **No hay usuarios previamente creados**, pero en el login principal hay un botón para ir al registro y crear la cuenta; esta solo requiere:
 
 - Username
