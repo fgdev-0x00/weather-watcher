@@ -23,6 +23,8 @@ Con esto, los servicios deben ejecutarse frontend en puerto `5173` y backend en 
 
 Para ingresar a la app desde el navegador, se debe ir a la URL `127.0.0.1:5173`, esto debe mostrar la pantalla de login.
 
+<img width="919" height="774" alt="Captura de pantalla 2025-12-15 150738" src="https://github.com/user-attachments/assets/5473ddc9-b057-4f17-a808-dc09d2540977" />
+
 **No hay usuarios previamente creados**, pero en el login principal hay un botón para ir al registro y crear la cuenta; esta solo requiere:
 
 - Username
