@@ -40,6 +40,11 @@ Después del login, si no existen datos de ciudades cargados en caché, se manda
 
 El primer paso fue revisar el **documento con los requerimientos** del challenge para planear el flujo que se requería, revisando las APIs externas necesarias y componentes del cliente que se debían crear y los endpoints en el backend.
 
+**Requerimientos:**
+- Entrada con usuario y contraseña
+- Lista de Ciudades Populares
+- Detalles del Clima por Ciudad
+
 Con el flujo decidido, elegí el stack mencionado arriba, dado que ya lo había usado en proyectos pasados y permite hacer el proyecto bastante modular, dejándolo listo para escalarlo en el futuro.
 
 ### AI Assisted
