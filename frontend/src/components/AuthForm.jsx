@@ -18,6 +18,16 @@ export default function AuthForm({
   footerLink,
   footerLinkText,
 }) {
+
+  const handleFormSubmit = (e) => {
+    if (!isFormValid || loading) {
+      e.preventDefault();
+      return;
+    }
+
+    onSubmit(e);
+  };
+
   return (
     <div className="h-full flex flex-col justify-center items-center p-8 bg-white">
       <div className="w-full max-w-sm text-center">
@@ -28,8 +38,7 @@ export default function AuthForm({
           {title}
         </h1>
 
-        <form onSubmit={onSubmit} className="space-y-6">
-          {/* Username */}
+        <form onSubmit={handleFormSubmit} className="space-y-6">
           <div>
             <input
               placeholder="Username"

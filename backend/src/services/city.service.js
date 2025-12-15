@@ -1,26 +1,21 @@
-import { weatherClient } from '#libs/http/weather.client';
+import { getCityWeather } from '#libs/http/weather.client';
+import { getCities } from '#libs/http/places.client';
 import { getCache, setCache, hasCache } from '#utils/localCache';
 import { parseCity } from '#utils/parsers';
 
-import { POPULAR_CITIES } from '#config/popularCities';
-import { cityCoordsMock } from '#config/cityCoords.mock';
-
-const WEATHER_API_KEY = process.env.OPEN_WEATHER_KEY;
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_TTL_5_MIN_MS = 300000;
+const CACHE_TTL_10_MIN_MS = 600000;
 
 const getWeather = async(lat, lon) => {
-     const params = {
-            lat,
-            lon,
-            lang: 'es',
-            units: 'metric',
-            appid: WEATHER_API_KEY,
-        };
+    try {
+        const response = await getCityWeather(lat, lon);
+        const parsedCity = parseCity(response);
 
-    const response = await weatherClient.get('/forecast', { params });
-    const parsedCity = parseCity(response);
-
-    return parsedCity;
+        return parsedCity;
+    } catch (error) {
+        console.log('Get error', error);
+        return null;
+    }
 } 
 
 
@@ -36,26 +31,33 @@ const getPopularCities = async () => {
 
     const allCities = [];
 
-    for (const city of POPULAR_CITIES) {
-        const parsedName = city.trim().toLocaleLowerCase().replaceAll(' ', '_');
-        const cityData = cityCoordsMock[parsedName];
-        const cacheKey = `${cityData.lat},${cityData.lon}`;
+    const popularCitiesKeys = 'POPULAR_CITIES';
 
-        if(hasCache(cacheKey)) {
-            const cachedCity = getCache(cacheKey);
-            allCities.push(cachedCity);
-            continue;
-        }
-
-       const cityWeather = await getWeather(cityData.lat, cityData.lon);
-       cityWeather.city_name = city;
-
-       setCache(cacheKey, cityWeather, CACHE_TTL_MS);
-
-       allCities.push(cityWeather);
+    if(!hasCache(popularCitiesKeys)) {
+        const popularCities = await getCities();
+        setCache(popularCitiesKeys, popularCities, CACHE_TTL_5_MIN_MS);
     }
 
-    setCache(allCitiesKey, allCities, CACHE_TTL_MS);
+    const cachedpopularCities = getCache(popularCitiesKeys);
+
+    for (const city of cachedpopularCities) {
+        const lat = city.lat;
+        const lon = city.long;
+        const cityName = city.city_name;
+
+        const weatherCitykey = `${lat},${lon}`;
+        if(!hasCache(weatherCitykey)) {
+            const cityWeather = await getWeather(lat, lon);
+            setCache(weatherCitykey, cityWeather, CACHE_TTL_10_MIN_MS);
+        }
+        const cachedCityWeather = getCache(weatherCitykey);
+
+       cachedCityWeather.city_name = cityName;
+       cachedCityWeather.state = city.state;
+       allCities.push(cachedCityWeather);
+       setCache(allCitiesKey, allCities, CACHE_TTL_5_MIN_MS);
+    }
+
 
     return {
         cities: allCities,

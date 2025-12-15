@@ -3,17 +3,16 @@ import { ArrowLeft } from 'lucide-react';
 import ForecastCard from '../components/ForecastCard';
 import { useWeatherContext } from '../context/WeatherContext';
 import { getWeatherIcon } from '../utils/weatherIcons';
-import { toTitleCase } from '../utils/formatters';
 
 export default function CityDetail() {
-  const { id: cityNameParam } = useParams(); 
+  const { id: cityNameParam } = useParams();
   const navigate = useNavigate();
 const { cities, loading, error } = useWeatherContext();
 
   if (loading) {
     return <div className="p-5 text-center text-indigo-600">Cargando detalle...</div>;
   }
-  
+
   if (error) {
     return <div className="p-5 text-center text-red-600">Error al cargar el detalle del clima.</div>;
   }
@@ -24,8 +23,7 @@ const { cities, loading, error } = useWeatherContext();
     return <p className="p-5">Ciudad no encontrada</p>;
   }
 
-  const { city_name, seven_day_forecast, temp, condition, max, min } = cityData; 
-  const formattedCityName = toTitleCase(city_name);
+  const { city_name, state, seven_day_forecast, temp, condition, max, min } = cityData;
 
   return (
     <div className="h-full p-5 pt-8">
@@ -39,16 +37,19 @@ const { cities, loading, error } = useWeatherContext();
         <div className="flex flex-col items-center text-center">
 
           <h1 className="text-4xl font-bold mb-2">
-            {formattedCityName} 
+            {city_name}
           </h1>
+          <h3 className="text-lg font-bold mb-2 text-gray-600">
+            {state}
+          </h3>
 
           <p className="text-gray-500 text-lg mb-8">
-            {condition} 
+            {condition}
           </p>
 
           <div className="flex items-start text-indigo-600 mb-6">
             <span className="text-[6rem] font-extrabold leading-none">
-              {temp} 
+              {temp}
             </span>
 
             <span className="text-6xl font-semibold ml-1 mt-2">
@@ -59,7 +60,7 @@ const { cities, loading, error } = useWeatherContext();
           {getWeatherIcon(condition, "w-12 h-12 mb-6")}
 
           <div className="text-xl font-medium text-gray-500">
-            Máx: {max}° / Mín: {min}° 
+            Máx: {max}° / Mín: {min}°
           </div>
         </div>
 
