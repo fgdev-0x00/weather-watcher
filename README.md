@@ -1,6 +1,6 @@
 # Weather-watcher
 
-Aplicación web para revisar el estado del clima en distintos lugares populares.
+Aplicación web para revisar el estado del clima en destintos populares.
 
 ## Stack
 
